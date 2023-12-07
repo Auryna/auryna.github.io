@@ -1,1 +1,63 @@
-test
+#!/bin/bash
+#Z1
+plik(){
+if [ -r  $1 ]
+then	
+	if [ -e $2 ] && [ -e $3 ]
+	then
+		if [ -w $2 ] && [ -w $3 ]
+		then
+			echo -n "" > $2 #pierwszy sposob czysczenia pliku
+			cat /dev/null > $3 #drugi sposob czysczenia pliku
+			while IFS= read -r line
+			do
+				losowa=$((RANDOM % 2 ))
+				if [ "$losowa" -eq 0 ]
+				then
+					echo "$line" >> "$2"
+				else
+					echo "$line" >> "$3"
+				fi
+			done < $1
+		else
+			echo 'blad zapisu do plikow'
+			exit -1 
+		fi		
+	else
+		echo 'brak podanych plikow'
+		exit -1 			
+	fi
+else 
+	echo 'blad odczytu pliku'
+	exit -1 
+fi
+}
+plik jeden.txt dwa.txt trzy.txt
+#Z2
+katalog(){
+if [ -d $1 ]
+then
+	if [ -w $1 ]
+	then
+		if [ -r $2 ]
+		then
+			while IFS= read -r linia
+			do
+				lokacja=$1/$linia
+				mkdir "$lokacja"
+			
+			done < $2
+		else
+			echo "blad odczytu pliku"
+			exit
+		fi
+	else
+		echo "blad to nie mozna zapisywac w katalogu"
+		exit
+	fi
+else
+	echo "blad to nie jest katalog"
+	exit
+fi
+}
+katalog ./gwyn cztery.txt
