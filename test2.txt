@@ -1,0 +1,36 @@
+#!/bin/bash
+statystyka(){
+if [ -e "$1" ] && [ -r "$1" ]
+then
+	if [ -e "$2" ]
+	then
+		if [ ! -w "$2" ]
+		then
+			echo "blad"
+			exit -1
+		fi
+	else
+		touch "$2" ||{ echo "blad" ; exit -1;}
+	fi
+	declare -A LiczbaSlow	
+	while read -r line
+	do
+		slowa=($(echo "$line" | sed -e 's/[[:blank:]]/\n/g'))
+		for word in "${slowa[@]}"
+		do
+			if [ -n "$word" ]
+			then
+				((LiczbaSlow[$word]++))
+			fi
+		done
+	done < "$1" 
+	for word in "${!LiczbaSlow[@]}" 
+	do
+		echo "$word ${LiczbaSlow[$word]}"
+	done| sort -k2,2nr > "$2"
+else
+	echo "blad"
+	exit -1
+fi
+}
+statystyka $1 $2
